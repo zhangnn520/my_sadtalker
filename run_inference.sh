@@ -1,0 +1,1 @@
+python inference.py --driven_audio ./examples/my_test/测试男.mp3 --source_image ./examples/my_test/1.mp4 --result_dir ./result --still --preprocess full --enhancer gfpgan
