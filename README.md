@@ -1,8 +1,10 @@
 <<<<<<< HEAD
+
+![](./docs/微信图片_20240118142346.jpg)
+
 <div align="center">
 
 <img src='https://user-images.githubusercontent.com/4397546/229094115-862c747e-7397-4b54-ba4a-bd368bfe2e0f.png' width='500px'/>
-
 
 <!--<h2> 😭 SadTalker： <span style="font-size:12px">Learning Realistic 3D Motion Coefficients for Stylized Audio-Driven Single Image Talking Face Animation </span> </h2> -->
 
@@ -19,6 +21,7 @@
     <a target='_blank'>Fei Wang <sup>1</sup> </a>&emsp;
 </div>
 <br>
+
 <div>
     <sup>1</sup> Xi'an Jiaotong University &emsp; <sup>2</sup> Tencent AI Lab &emsp; <sup>3</sup> Ant Group &emsp; 
 </div>
@@ -110,7 +113,7 @@ Community tutorials: [中文Windows教程 (Chinese Windows tutorial)](https://ww
   ### Coqui TTS is optional for gradio demo. 
   ### pip install TTS
 
-  ```  
+  ```
 ### Windows
 
 A video tutorial in chinese is available [here](https://www.bilibili.com/video/BV1Dc411W7V6/). You can also follow the following instructions:
@@ -170,8 +173,8 @@ Model explains:
 |checkpoints/SadTalker_V0.0.2_256.safetensors | packaged sadtalker checkpoints of old version, 256 face render).
 |checkpoints/SadTalker_V0.0.2_512.safetensors | packaged sadtalker checkpoints of old version, 512 face render).
 |gfpgan/weights | Face detection and enhanced models used in `facexlib` and `gfpgan`.
-  
-  
+
+
 ##### Old version
 | Model | Description
 | :--- | :----------
