@@ -1,6 +1,5 @@
 <<<<<<< HEAD
 
-![](./docs/微信图片_20240118142346.jpg)
 
 <div align="center">
 
@@ -304,3 +303,5 @@ All the copyrights of the demo images and audio are from community users or the 
 # sadtalker
 
 >>>>>>> b9ba07cacd0597f2c43bd64ab53353e810e79e24
+# 有兴趣研究sadtalker的小伙伴可以入群
+<img src='./docs/微信图片_20240118142346.jpg'/>
