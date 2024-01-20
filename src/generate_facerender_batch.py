@@ -7,8 +7,7 @@ import scipy.io as scio
 from glob import glob
 
 
-def get_facerender_data(source_video_or_image,coeff_path, pic_path, first_coeff_path, audio_path, batch_size,size, device,
-                        input_yaw_list=None, input_pitch_list=None, input_roll_list=None):
+def get_facerender_data(source_video_or_image,coeff_path, pic_path, first_coeff_path, audio_path, batch_size, device,size):
     semantic_radius = 13
     video_name = os.path.splitext(os.path.split(coeff_path)[-1])[0]
     txt_path = os.path.splitext(coeff_path)[0]
@@ -37,17 +36,18 @@ def get_facerender_data(source_video_or_image,coeff_path, pic_path, first_coeff_
             source_image_ts = source_image_ts.to(device)
             source_image_ts_list.append(source_image_ts)
         data['source_image'] = source_image_ts_list
-    generated_dict = scio.loadmat(coeff_path)
     source_semantics_dict = scio.loadmat(first_coeff_path)
-    source_semantics = source_semantics_dict['coeff_3dmm'][:, :73]  # 1 70
-    generated_3dmm = generated_dict['coeff_3dmm'][:, :70]
+    generated_dict = scio.loadmat(coeff_path)
 
+    source_semantics = source_semantics_dict['coeff_3dmm'][:1, :73]  # 1 70
+    generated_3dmm = generated_dict['coeff_3dmm'][:, :70]
     source_semantics_new = transform_semantic_1(source_semantics, semantic_radius)
     source_semantics_ts = torch.FloatTensor(source_semantics_new).unsqueeze(0)
     source_semantics_ts = source_semantics_ts.repeat(batch_size, 1, 1)
     data['source_semantics'] = source_semantics_ts
 
-    # target
+    # target 
+    generated_dict = scio.loadmat(coeff_path)
     # generated_3dmm = generated_dict['coeff_3dmm']
     generated_3dmm[:, :64] = generated_3dmm[:, :64] * 1.0
 
@@ -80,16 +80,6 @@ def get_facerender_data(source_video_or_image,coeff_path, pic_path, first_coeff_
     data['target_semantics_list'] = torch.FloatTensor(target_semantics_np)
     data['video_name'] = video_name
     data['audio_path'] = audio_path
-    if input_yaw_list is not None:
-        yaw_c_seq = gen_camera_pose(input_yaw_list, frame_num, batch_size)
-        data['yaw_c_seq'] = torch.FloatTensor(yaw_c_seq)
-    if input_pitch_list is not None:
-        pitch_c_seq = gen_camera_pose(input_pitch_list, frame_num, batch_size)
-        data['pitch_c_seq'] = torch.FloatTensor(pitch_c_seq)
-    if input_roll_list is not None:
-        roll_c_seq = gen_camera_pose(input_roll_list, frame_num, batch_size)
-        data['roll_c_seq'] = torch.FloatTensor(roll_c_seq)
-
     return data
 
 

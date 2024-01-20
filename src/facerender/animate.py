@@ -11,7 +11,6 @@ from src.facerender.modules.mapping import MappingNet
 from src.facerender.modules.generator import OcclusionAwareSPADEGenerator
 from src.facerender.modules.make_animation import make_animation, make_animation2
 from pydub import AudioSegment
-from src.utils.face_enhancer import enhancer_generator_with_len, enhancer_list
 from src.utils.paste_pic import paste_pic, paste_pic2
 from src.utils.videoio import save_video_with_watermark
 
@@ -122,35 +121,38 @@ class AnimateFromCoeff():
                  restorer_model,
                  enhancer_model,
                  enhancer_region,
-                 enhancer,
-                 background_enhancer,
-                 preprocess
-                 ):
-        source_image = x['source_image'].type(torch.FloatTensor)
+                 preprocess):
+        if pic_path.split('.')[-1] in ['jpg', 'png', 'jpeg']:
+            source_image = x['source_image'].type(torch.FloatTensor)
+            source_image = source_image.to(self.device)
+        else:
+            source_image = x['source_image']
+
         source_semantics = x['source_semantics'].type(torch.FloatTensor)
         target_semantics = x['target_semantics_list'].type(torch.FloatTensor)
-        source_image = source_image.to(self.device)
+
         source_semantics = source_semantics.to(self.device)
         target_semantics = target_semantics.to(self.device)
-        if 'yaw_c_seq' in x:
-            yaw_c_seq = x['yaw_c_seq'].type(torch.FloatTensor)
-            yaw_c_seq = x['yaw_c_seq'].to(self.device)
-        else:
-            yaw_c_seq = None
-        if 'pitch_c_seq' in x:
-            pitch_c_seq = x['pitch_c_seq'].type(torch.FloatTensor)
-            pitch_c_seq = x['pitch_c_seq'].to(self.device)
-        else:
-            pitch_c_seq = None
-        if 'roll_c_seq' in x:
-            roll_c_seq = x['roll_c_seq'].type(torch.FloatTensor)
-            roll_c_seq = x['roll_c_seq'].to(self.device)
-        else:
-            roll_c_seq = None
 
         frame_num = x['frame_num']
-
         if pic_path.split('.')[-1] in ['jpg', 'png', 'jpeg']:
+            if 'yaw_c_seq' in x:
+                yaw_c_seq = x['yaw_c_seq'].type(torch.FloatTensor)
+                yaw_c_seq = x['yaw_c_seq'].to(self.device)
+            else:
+                yaw_c_seq = None
+            if 'pitch_c_seq' in x:
+                pitch_c_seq = x['pitch_c_seq'].type(torch.FloatTensor)
+                pitch_c_seq = x['pitch_c_seq'].to(self.device)
+            else:
+                pitch_c_seq = None
+            if 'roll_c_seq' in x:
+                roll_c_seq = x['roll_c_seq'].type(torch.FloatTensor)
+                roll_c_seq = x['roll_c_seq'].to(self.device)
+            else:
+                roll_c_seq = None
+
+            frame_num = x['frame_num']
             predictions_video = make_animation2(source_image, source_semantics, target_semantics,
                                                 self.generator, self.kp_extractor, self.he_estimator, self.mapping,
                                                 yaw_c_seq, pitch_c_seq, roll_c_seq, use_exp=True)
@@ -185,8 +187,7 @@ class AnimateFromCoeff():
         audio_name = os.path.splitext(os.path.split(audio_path)[-1])[0]
         new_audio_path = os.path.join(video_save_dir, audio_name + '.wav')
         start_time = 0
-        # sound = AudioSegment.from_mp3(audio_path)
-        sound = AudioSegment.from_file(audio_path)
+        sound = AudioSegment.from_mp3(audio_path)
         frames = frame_num
         end_time = start_time + frames * 1 / 25 * 1000
         word1 = sound.set_frame_rate(16000)
@@ -199,35 +200,13 @@ class AnimateFromCoeff():
         video_name_full = x['video_name'] + '_full.mp4'
         full_video_path = os.path.join(video_save_dir, video_name_full)
         return_path = full_video_path
-
         if pic_path.split('.')[-1] in ['jpg', 'png', 'jpeg']:
             tmp_path, new_audio_path = paste_pic2(path, pic_path, crop_info, new_audio_path, full_video_path,
                                                   extended_crop=True if 'ext' in preprocess.lower() else False)
-
         else:
             tmp_path, new_audio_path = paste_pic(path, pic_path, crop_info, new_audio_path,
                                                  full_video_path, restorer_model, enhancer_model,
                                                  enhancer_region)
         print(f'The generated video is named {video_save_dir}/{video_name_full}')
-
-        # todo 视频增强
-        if enhancer != 'none':
-            video_name_enhancer = x['video_name'] + '_enhanced.mp4'
-            enhanced_path = os.path.join(video_save_dir, 'temp_' + video_name_enhancer)
-            av_path_enhancer = os.path.join(video_save_dir, video_name_enhancer)
-            return_path = av_path_enhancer
-
-            try:
-                enhanced_images_gen_with_len = enhancer_generator_with_len(full_video_path, method=enhancer,
-                                                                           bg_upsampler=background_enhancer)
-                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
-            except Exception as e:
-                enhanced_images_gen_with_len = enhancer_list(full_video_path, method=enhancer,
-                                                             bg_upsampler=background_enhancer)
-                imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
-                print("貌似增强出现问题", e)
-            save_video_with_watermark(enhanced_path, new_audio_path, av_path_enhancer, watermark=False)
-            print(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
-            os.remove(enhanced_path)
 
         return tmp_path, new_audio_path, return_path

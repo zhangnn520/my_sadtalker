@@ -44,29 +44,6 @@ class Audio2Pose(nn.Module):
         batch['pose_gt'] = pose_gt
 
         return batch
-    # def forward(self, x):
-    #
-    #     batch = {}
-    #     coeff_gt = x['gt'].cuda().squeeze(0)           #bs frame_len+1 73
-    #     batch['pose_motion_gt'] = coeff_gt[:, 1:, 64:70] - coeff_gt[:, :1, 64:70] #bs frame_len 6
-    #     batch['ref'] = coeff_gt[:, 0, 64:70]  #bs  6
-    #     batch['class'] = x['class'].squeeze(0).cuda() # bs
-    #     indiv_mels= x['indiv_mels'].cuda().squeeze(0) # bs seq_len+1 80 16
-    #
-    #     # forward
-    #     audio_emb_list = []
-    #     audio_emb = self.audio_encoder(indiv_mels[:, 1:, :, :].unsqueeze(2)) #bs seq_len 512
-    #     batch['audio_emb'] = audio_emb
-    #     batch = self.netG(batch)
-    #
-    #     pose_motion_pred = batch['pose_motion_pred']           # bs frame_len 6
-    #     pose_gt = coeff_gt[:, 1:, 64:70].clone()               # bs frame_len 6
-    #     pose_pred = coeff_gt[:, :1, 64:70] + pose_motion_pred  # bs frame_len 6
-    #
-    #     batch['pose_pred'] = pose_pred
-    #     batch['pose_gt'] = pose_gt
-    #
-    #     return batch
 
     def test(self, x):
 

@@ -68,9 +68,6 @@ class Audio2Coeff():
             # test
             results_dict_exp = self.audio2exp_model.test(batch)
             exp_pred = results_dict_exp['exp_coeff_pred']  # bs T 64
-            # todo 姿势可以进行调整和优化
-            # batch['class'] = torch.LongTensor([pose_style]).to(self.device)
-
             batch['class'] = torch.LongTensor([0]).to(self.device)
             results_dict_pose = self.audio2pose_model.test(batch)
             pose_pred = results_dict_pose['pose_pred']  # bs T 6
