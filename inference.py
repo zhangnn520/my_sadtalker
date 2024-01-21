@@ -104,10 +104,10 @@ def main(args):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--driven_audio",
-                        default='/mk_data/znn/mkios_shuziren/sadTalker-Video-Lip-Sync/examples/my_test/测试男.mp3',
+                        default='/mk_data/znn/mkios_shuziren/origin_sadtalker/examples/my_test/测试男.mp3',
                         help="path to driven audio")
     parser.add_argument("--source_video",
-                        default='/mk_data/znn/mkios_shuziren/sadTalker-Video-Lip-Sync/examples/my_test/7.mp4',
+                        default='/mk_data/znn/mkios_shuziren/origin_sadtalker/examples/my_test/图片测试1.jpg',
                         help="path to source image")
     parser.add_argument("--checkpoint_dir", default='./checkpoints', help="path to output")
     parser.add_argument("--result_dir", default='./results', help="path to output")
